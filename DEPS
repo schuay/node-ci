@@ -15,6 +15,10 @@ vars = {
   'depot_tools_revision': 'efe902b20b6ae0d367b354bdaa2e10c19349f880',
   'depot_tools_url': 'https://chromium.googlesource.com/chromium/tools/depot_tools.git',
 
+  # TODO(jgruber): Newer revisions (ae68779) are broken.
+  'fuchsia_revision': '8e8db13b538ecb251e5ce9d5c781fc142f9752fd',
+  'fuchsia_url': 'https://chromium.googlesource.com/chromium/src/third_party/fuchsia-sdk.git',
+
   'googletest_revision': '8b6d3f9c4a774bef3081195d422993323b6bb2e0',
   'googletest_url': 'https://chromium.googlesource.com/external/github.com/google/googletest.git',
 
@@ -27,8 +31,9 @@ vars = {
   'markupsafe_revision': '8f45f5cfa0009d2a70589bcda0349b8cb2b72783',
   'markupsafe_url': 'https://chromium.googlesource.com/chromium/src/third_party/markupsafe.git',
 
-  'node_revision': 'e47157ba2a1e76f6c68050eaf665a218c611eb35',
-  'node_url': 'https://chromium.googlesource.com/external/github.com/v8/node.git',
+  # TODO(jgruber): Upstream changes.
+  'node_revision': 'for-upstream',
+  'node_url': 'https://github.com/schuay/node.git',
 
   'trace_common_revision' : '936ba8a963284a6b3737cf2f0474a7131073abee',
   'trace_common_url': 'https://chromium.googlesource.com/chromium/src/base/trace_event/common.git',
@@ -43,10 +48,24 @@ deps = {
   'node-ci/buildtools': Var('buildtools_url') + '@' + Var('buildtools_revision'),
   'node-ci/node': Var('node_url') + '@' + Var('node_revision'),
   'node-ci/third_party/depot_tools': Var('depot_tools_url') + '@' + Var('depot_tools_revision'),
+  'node-ci/third_party/fuchsia-sdk': {
+    'url': Var('fuchsia_url') + '@' + Var('fuchsia_revision'),
+    'condition': 'checkout_fuchsia',
+  },
   'node-ci/third_party/googletest/src': Var('googletest_url') + '@' + Var('googletest_revision'),
   'node-ci/third_party/icu': Var('icu_url') + '@' + Var('icu_revision'),
   'node-ci/third_party/jinja2': Var('jinja2_url') + '@' + Var('jinja2_revision'),
   'node-ci/third_party/markupsafe': Var('markupsafe_url') + '@' + Var('markupsafe_revision'),
+  'node-ci/third_party/qemu-linux-x64': {
+      'packages': [
+          {
+              'package': 'fuchsia/qemu/linux-amd64',
+              'version': '9cc486c5b18a0be515c39a280ca9a309c54cf994'
+          },
+      ],
+      'condition': 'host_os == "linux" and checkout_fuchsia',
+      'dep_type': 'cipd',
+  },
   'node-ci/tools/clang': Var('clang_url') + '@' + Var('clang_revision'),
   'node-ci/v8': Var('v8_url') + '@' +  Var('v8_revision'),
 }
@@ -72,6 +91,15 @@ hooks = [
     'name': 'clang',
     'pattern': '.',
     'action': ['python', 'node-ci/tools/clang/scripts/update.py'],
+  },
+  {
+    'name': 'fuchsia_sdk',
+    'pattern': '.',
+    'condition': 'checkout_fuchsia',
+    'action': [
+      'python',
+      'node-ci/build/fuchsia/update_sdk.py',
+    ],
   },
   {
     # Update LASTCHANGE.
