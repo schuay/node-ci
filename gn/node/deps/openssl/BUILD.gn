@@ -65,5 +65,4 @@ node_dep("openssl") {
 
   public_configs = [ ":external_config" ]
   configs = [ ":internal_config" ]
-  remove_configs = [ "//build/config/compiler:compiler" ]
 }
