@@ -12,3 +12,9 @@
 
 # Generated
 /node_files.json
+
+# Miscellaneous
+.*.sw?
+
+.project
+.settings/
