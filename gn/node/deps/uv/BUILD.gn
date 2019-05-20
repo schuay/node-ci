@@ -189,6 +189,7 @@ node_dep("uv") {
   if (is_fuchsia) {
     sources += [
       "src/unix/fuchsia.c",
+      "src/unix/fuchsia-core.c",
       "src/unix/proctitle.c",
       "src/unix/no-fsevents.c",
     ]
