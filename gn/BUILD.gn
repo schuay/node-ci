@@ -12,3 +12,7 @@ group("test_all") {
     "//node/test/js-native-api:build",
   ]
 }
+
+executable("playground") {
+  sources = [ "playground/main.cpp" ]
+}
